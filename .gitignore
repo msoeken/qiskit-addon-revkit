@@ -1,0 +1,5 @@
+build
+dist
+lib
+qiskit_addon_revkit.egg-info
+venv
