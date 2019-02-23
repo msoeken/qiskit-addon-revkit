@@ -38,8 +38,8 @@ class BooleanExpression(Oracle):
     netlist = oracle_synth(self.tt)
     self.var_regs = QuantumRegister(self.tt.num_vars, "qv")
     self.out_regs = QuantumRegister(1, "qo")
-    self.circuit = QuantumCircuit(self.var_regs, self.out_regs)
-    self.circuit = netlist.to_qiskit(circuit=self.circuit)
+    self._circuit = QuantumCircuit(self.var_regs, self.out_regs)
+    self._circuit = netlist.to_qiskit(circuit=self.circuit)
 
   @property
   def variable_register(self):
@@ -50,14 +50,12 @@ class BooleanExpression(Oracle):
     return None
 
   @property
-  def outcome_register(self):
+  def output_register(self):
     return self.out_regs
 
   def construct_circuit(self):
-    return self.circuit
+    return self._circuit
 
-  def evaluate_classically(self, assignment):
-    return sum(2**i if a else 0 for i, a in enumerate(assignment))
-
-  def interpret_measurement(self, top_measurement=None):
-    return [bool(int(tf)) for tf in top_measurement[::-1]]
+  def evaluate_classically(self, top_measurement):
+    assignment = [bool(int(tf)) for tf in top_measurement[::-1]]
+    return sum(2**i if a else 0 for i, a in enumerate(assignment)), assignment
